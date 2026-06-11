@@ -46,6 +46,7 @@
       display: flex;
       gap: 0.5rem;
       margin-top: 1rem;
+      flex-wrap: wrap;
     }
 
     .add-form input {
@@ -84,6 +85,35 @@
     .add-form button:hover {
       opacity: 0.75;
     }
+
+    .priority-select {
+      padding: 0.55rem 0.75rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: #1a1a1a;
+      background: white;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .priority-select:focus {
+      border-color: #1a1a1a;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-high   { background: #e05252; }
+    .dot-medium { background: #f0a030; }
+    .dot-low    { background: #4caf50; }
+    .dot-none   { background: #ddd; }
 
     .task-list {
       list-style: none;
@@ -158,6 +188,12 @@
       <h1>Tasks</h1>
       <form class="add-form" onsubmit="addTask(event)">
         <input type="text" id="taskInput" placeholder="Add a task…" autocomplete="off">
+        <select class="priority-select" id="priorityInput">
+          <option value="none">— priority</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
         <button type="submit">Add</button>
       </form>
     </div>
@@ -188,6 +224,10 @@
         const li = document.createElement('li');
         li.className = 'task-item' + (task.done ? ' done' : '');
 
+        const dot = document.createElement('span');
+        dot.className = 'dot dot-' + (task.priority || 'none');
+        dot.title = task.priority ? task.priority + ' priority' : 'no priority';
+
         const cb = document.createElement('input');
         cb.type = 'checkbox';
         cb.checked = task.done;
@@ -204,7 +244,7 @@
         del.title = 'Delete';
         del.onclick = () => remove(i);
 
-        li.append(cb, label, del);
+        li.append(dot, cb, label, del);
         list.appendChild(li);
       });
     }
@@ -212,10 +252,12 @@
     function addTask(e) {
       e.preventDefault();
       const input = document.getElementById('taskInput');
+      const priority = document.getElementById('priorityInput');
       const text = input.value.trim();
       if (!text) return;
-      tasks.push({ text, done: false });
+      tasks.push({ text, done: false, priority: priority.value === 'none' ? null : priority.value });
       input.value = '';
+      priority.value = 'none';
       save();
       render();
     }
