@@ -216,6 +216,19 @@
       font-size: 0.8rem;
       color: #bbb;
     }
+
+    .task-edit {
+      flex: 1;
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: #1a1a1a;
+      border: none;
+      border-bottom: 1px solid #1a1a1a;
+      outline: none;
+      background: transparent;
+      padding: 0;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
@@ -296,7 +309,7 @@
         const label = document.createElement('span');
         label.className = 'task-label';
         label.textContent = task.text;
-        label.onclick = () => toggle(i);
+        label.onclick = () => startEdit(i, label);
 
         const del = document.createElement('button');
         del.className = 'delete-btn';
@@ -320,6 +333,29 @@
       priority.value = 'none';
       save();
       render();
+    }
+
+    function startEdit(i, label) {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'task-edit';
+      input.value = tasks[i].text;
+      label.replaceWith(input);
+      input.focus();
+      input.select();
+
+      function commit() {
+        const val = input.value.trim();
+        if (val) tasks[i].text = val;
+        save();
+        render();
+      }
+
+      input.onblur = commit;
+      input.onkeydown = e => {
+        if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+        if (e.key === 'Escape') { input.onblur = null; render(); }
+      };
     }
 
     function toggle(i) {
