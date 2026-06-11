@@ -209,6 +209,13 @@
       color: #bbb;
       font-size: 0.9rem;
     }
+
+    .card-footer {
+      padding: 0.85rem 2rem;
+      border-top: 1px solid #f0f0f0;
+      font-size: 0.8rem;
+      color: #bbb;
+    }
   </style>
 </head>
 <body>
@@ -234,6 +241,7 @@
     <ul class="task-list" id="taskList">
       <li class="empty" id="emptyMsg">No tasks yet.</li>
     </ul>
+    <div class="card-footer" id="taskCount"></div>
   </div>
 
   <script>
@@ -255,7 +263,11 @@
     function render() {
       const list = document.getElementById('taskList');
       const empty = document.getElementById('emptyMsg');
+      const count = document.getElementById('taskCount');
       list.innerHTML = '';
+
+      const remaining = tasks.filter(t => !t.done).length;
+      count.textContent = tasks.length ? `${remaining} task${remaining !== 1 ? 's' : ''} remaining` : '';
 
       const visible = tasks.filter(t =>
         filter === 'all' ? true : filter === 'active' ? !t.done : t.done
